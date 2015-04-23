@@ -183,7 +183,9 @@ d3.gantt = function () {
     gantt.margin = function (value) {
         if (!arguments.length)
             return margin;
+        width = width + margin.left + margin.right;
         margin = value;
+        width = width - margin.left - margin.right;
         return gantt;
     };
 
@@ -225,8 +227,8 @@ d3.gantt = function () {
 
     gantt.width = function (value) {
         if (!arguments.length)
-            return width;
-        width = +value;
+            return width + margin.left + margin.right;
+        width = +value - margin.left - margin.right;
         return gantt;
     };
 
