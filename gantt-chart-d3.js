@@ -7,6 +7,13 @@
  * @version 2.1
  */
 
+
+/**
+ *
+ * @property {string} container                 - selector string for containing element
+ * @returns {gantt}
+ */
+
 d3.gantt = function () {
     var FIT_TIME_DOMAIN_MODE = "fit";
     var FIXED_TIME_DOMAIN_MODE = "fixed";
@@ -24,6 +31,7 @@ d3.gantt = function () {
     var taskStatus = [];
     var height = document.body.clientHeight - margin.top - margin.bottom - 5;
     var width = document.body.clientWidth - margin.right - margin.left - 5;
+    var container = "body";
 
     var tickFormat = "%H:%M";
 
@@ -76,7 +84,7 @@ d3.gantt = function () {
         initTimeDomain(tasks);
         initAxis();
 
-        var svg = d3.select("body")
+        var svg = d3.select(container)
             .append("svg")
             .attr("class", "chart")
             .attr("width", width + margin.left + margin.right)
@@ -182,9 +190,7 @@ d3.gantt = function () {
     };
 
     /**
-     * @param {string}
-     *                vale The value can be "fit" - the domain fits the data or
-     *                "fixed" - fixed domain.
+     * @param {string} value  - The value can be "fit" - the domain fits the data or "fixed" - fixed domain.
      */
     gantt.timeDomainMode = function (value) {
         if (!arguments.length)
@@ -194,6 +200,10 @@ d3.gantt = function () {
 
     };
 
+    /**
+     * @param value - array of strings with possible task types
+     * @returns {*}
+     */
     gantt.taskTypes = function (value) {
         if (!arguments.length)
             return taskTypes;
@@ -228,6 +238,13 @@ d3.gantt = function () {
         tickFormat = value;
         return gantt;
     };
+
+    gantt.container = function(value) {
+        if (!arguments.length)
+            return container;
+        container = value;
+        return gantt;
+    }
 
 
     return gantt;
