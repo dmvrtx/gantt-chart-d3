@@ -8,6 +8,11 @@
  */
 
 
+/**
+ * Append title tooltip element to SVG objects for tasks with desc attribute set
+ * @param {object} d
+ * @param {integer} i
+ */
 function descFunction (d, i) {
     if (d.desc != undefined) {
         d3.select(this).append('title').text(d.desc);
@@ -15,8 +20,7 @@ function descFunction (d, i) {
 }
 
 /**
- *
- * @property {string} container                 - selector string for containing element
+ * Gantt chart object
  * @returns {gantt}
  */
 
@@ -41,50 +45,11 @@ d3.gantt = function () {
 
     var tickFormat = "%H:%M";
 
-    var keyFunction = function (d) {
-        return d.startDate + d.taskName + d.endDate;
-    };
-
-    var rectTransform = function (d) {
-        return "translate(" + x(d.startDate) + "," + y(d.taskName) + ")";
-    };
-
-    var x = d3.time.scale().domain([timeDomainStart, timeDomainEnd]).range([0, width]).clamp(true);
-
-    var y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([0, height - margin.top - margin.bottom], .1);
-
-    var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
-        .tickSize(8).tickPadding(8);
-
-    var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
-
-    var initTimeDomain = function (tasks) {
-        if (timeDomainMode === FIT_TIME_DOMAIN_MODE) {
-            if (tasks === undefined || tasks.length < 1) {
-                timeDomainStart = d3.time.day.offset(new Date(), -3);
-                timeDomainEnd = d3.time.hour.offset(new Date(), +3);
-                return;
-            }
-            tasks.sort(function (a, b) {
-                return a.endDate - b.endDate;
-            });
-            timeDomainEnd = tasks[tasks.length - 1].endDate;
-            tasks.sort(function (a, b) {
-                return a.startDate - b.startDate;
-            });
-            timeDomainStart = tasks[0].startDate;
-        }
-    };
-
-    var initAxis = function () {
-        x = d3.time.scale().domain([timeDomainStart, timeDomainEnd]).range([0, width]).clamp(true);
-        y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([0, height - margin.top - margin.bottom], .1);
-        xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
-            .tickSize(8).tickPadding(8);
-
-        yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
-    };
-
+    /**
+     * Create new SVG object and render chart in it
+     * @param {object} tasks - array of tasks
+     * @returns {gantt}
+     */
     function gantt(tasks) {
 
         initTimeDomain(tasks);
@@ -137,6 +102,11 @@ d3.gantt = function () {
         return taskStatus[d.status];
     }
 
+    /**
+     * Update existing SVG chart with new tasks
+     * @param {object} tasks - list of tasks (old and new ones)
+     * @returns {gantt}
+     */
     gantt.redraw = function (tasks) {
 
         initTimeDomain(tasks);
@@ -208,7 +178,7 @@ d3.gantt = function () {
     };
 
     /**
-     * @param value - array of strings with possible task types
+     * @param {object} value - array of strings with possible task types
      * @returns {*}
      */
     gantt.taskTypes = function (value) {
@@ -218,6 +188,10 @@ d3.gantt = function () {
         return gantt;
     };
 
+    /**
+     * @param {object} value - mapping to CSS styles depending on task type
+     * @returns {*}
+     */
     gantt.taskStatus = function (value) {
         if (!arguments.length)
             return taskStatus;
@@ -246,12 +220,65 @@ d3.gantt = function () {
         return gantt;
     };
 
+    /**
+     * @param {string} value - string selector for chart container
+     * @returns {*}
+     */
     gantt.container = function(value) {
         if (!arguments.length)
             return container;
         container = value;
         return gantt;
     }
+
+    /**
+     * Calculate key for given task for chart rendering/updating
+     * @param {object} d
+     * @returns {*}
+     */
+    var keyFunction = function (d) {
+        return d.startDate + d.taskName + d.endDate;
+    };
+
+    var rectTransform = function (d) {
+        return "translate(" + x(d.startDate) + "," + y(d.taskName) + ")";
+    };
+
+    var x = d3.time.scale().domain([timeDomainStart, timeDomainEnd]).range([0, width]).clamp(true);
+
+    var y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([0, height - margin.top - margin.bottom], .1);
+
+    var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
+        .tickSize(8).tickPadding(8);
+
+    var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
+
+    var initTimeDomain = function (tasks) {
+        if (timeDomainMode === FIT_TIME_DOMAIN_MODE) {
+            if (tasks === undefined || tasks.length < 1) {
+                timeDomainStart = d3.time.day.offset(new Date(), -3);
+                timeDomainEnd = d3.time.hour.offset(new Date(), +3);
+                return;
+            }
+            tasks.sort(function (a, b) {
+                return a.endDate - b.endDate;
+            });
+            timeDomainEnd = tasks[tasks.length - 1].endDate;
+            tasks.sort(function (a, b) {
+                return a.startDate - b.startDate;
+            });
+            timeDomainStart = tasks[0].startDate;
+        }
+    };
+
+    var initAxis = function () {
+        x = d3.time.scale().domain([timeDomainStart, timeDomainEnd]).range([0, width]).clamp(true);
+        y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([0, height - margin.top - margin.bottom], .1);
+        xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
+            .tickSize(8).tickPadding(8);
+
+        yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
+    };
 
 
     return gantt;
