@@ -8,6 +8,12 @@
  */
 
 
+function descFunction (d, i) {
+    if (d.desc != undefined) {
+        d3.select(this).append('title').text(d.desc);
+    }
+}
+
 /**
  *
  * @property {string} container                 - selector string for containing element
@@ -101,7 +107,6 @@ d3.gantt = function () {
             .attr("rx", 5)
             .attr("ry", 5)
             .attr("class", classNameFunction)
-            .attr('data-desc', descFunction)
             .attr("y", 0)
             .attr("transform", rectTransform)
             .attr("height", function (d) {
@@ -109,7 +114,8 @@ d3.gantt = function () {
             })
             .attr("width", function (d) {
                 return (x(d.endDate) - x(d.startDate));
-            });
+            })
+            .each(descFunction);
 
 
         svg.append("g")
@@ -131,13 +137,6 @@ d3.gantt = function () {
         return taskStatus[d.status];
     }
 
-    var descFunction = function(d) {
-        if (d.desc != undefined) {
-            return d.desc;
-        }
-        return null;
-    }
-
     gantt.redraw = function (tasks) {
 
         initTimeDomain(tasks);
@@ -153,7 +152,7 @@ d3.gantt = function () {
             .attr("rx", 5)
             .attr("ry", 5)
             .attr("class", classNameFunction)
-            .attr('data-desc', descFunction)
+            .each(descFunction)
             .transition()
             .attr("y", 0)
             .attr("transform", rectTransform)
