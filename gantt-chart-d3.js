@@ -100,12 +100,8 @@ d3.gantt = function () {
             .append("rect")
             .attr("rx", 5)
             .attr("ry", 5)
-            .attr("class", function (d) {
-                if (taskStatus[d.status] == null) {
-                    return "bar";
-                }
-                return taskStatus[d.status];
-            })
+            .attr("class", classNameFunction)
+            .attr('data-desc', descFunction)
             .attr("y", 0)
             .attr("transform", rectTransform)
             .attr("height", function (d) {
@@ -128,6 +124,20 @@ d3.gantt = function () {
 
     };
 
+    var classNameFunction = function(d) {
+        if (taskStatus[d.status] == null) {
+            return "bar";
+        }
+        return taskStatus[d.status];
+    }
+
+    var descFunction = function(d) {
+        if (d.desc != undefined) {
+            return d.desc;
+        }
+        return null;
+    }
+
     gantt.redraw = function (tasks) {
 
         initTimeDomain(tasks);
@@ -142,12 +152,8 @@ d3.gantt = function () {
             .insert("rect", ":first-child")
             .attr("rx", 5)
             .attr("ry", 5)
-            .attr("class", function (d) {
-                if (taskStatus[d.status] == null) {
-                    return "bar";
-                }
-                return taskStatus[d.status];
-            })
+            .attr("class", classNameFunction)
+            .attr('data-desc', descFunction)
             .transition()
             .attr("y", 0)
             .attr("transform", rectTransform)
